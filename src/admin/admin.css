@@ -169,6 +169,15 @@ textarea {
   min-width: 0;
 }
 
+/* 책등 모양 색 견본 — 방문자 페이지 책장에 꽂힐 색을 미리 보여준다 */
+.admin-swatch {
+  flex: none;
+  width: 10px;
+  height: 24px;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.1);
+}
+
 .admin-badge {
   font-size: 0.75rem;
   padding: 2px 8px;

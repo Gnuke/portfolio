@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import type { AdminRepository } from './adminRepository.types'
 import type { TechCategory, TechStackRecord } from '../data/types'
+import { techColorFor } from '../data/techColors'
 
 const CATEGORIES: TechCategory[] = ['Language', 'Backend', 'Frontend', 'Infra', 'Tool']
 
@@ -31,6 +32,7 @@ export default function TechStackManager({ repo }: { repo: AdminRepository }) {
       await repo.createTech({
         name: name.trim(),
         category: (category || null) as TechCategory | null,
+        color: techColorFor(name.trim()),
       })
       setName('')
       await reload()
@@ -45,7 +47,7 @@ export default function TechStackManager({ repo }: { repo: AdminRepository }) {
       await repo.updateTech(editing.id, {
         name: editName.trim(),
         category: editing.category,
-        color: editing.color,
+        color: techColorFor(editName.trim()),
         displayOrder: editing.displayOrder,
       })
       setEditing(null)
@@ -114,6 +116,11 @@ export default function TechStackManager({ repo }: { repo: AdminRepository }) {
               </>
             ) : (
               <>
+                <span
+                  className="admin-swatch"
+                  style={{ background: item.color }}
+                  aria-hidden="true"
+                />
                 <div className="grow">
                   <b>{item.name}</b>
                 </div>
