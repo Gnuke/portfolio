@@ -1240,16 +1240,6 @@ button {
 /* ---- responsive ----------------------------------------------------------- */
 /* 세로 화면: 방을 화면에 가득 차게 크롭(cover) — 좌우가 잘리는 대신 몰입감 유지.
    HUD/패널은 .hud(화면 기준) 레이어에 있어 크롭의 영향을 받지 않는다. */
-@media (max-width: 720px) and (orientation: portrait) {
-  .viewport {
-    /* 모든 핫스팟(0.15~0.8 구간)이 시야에 남는 선까지만 확대 */
-    width: min(134dvh, 165vw);
-    max-width: none;
-    border-radius: 0;
-    box-shadow: none;
-  }
-}
-
 @media (max-width: 720px) {
   .panel-layer {
     align-items: flex-end;
@@ -1285,6 +1275,78 @@ button {
   }
   .board-title {
     font-size: 26px;
+  }
+}
+
+/* ── 모바일 세로: 디오라마 연출 ──────────────────────────────────────────
+   4:3 방을 세로 화면에 꽉 채우면 핫스팟이 잘리므로, 방을 "무대 위 디오라마"로
+   연출한다: 좌우만 살짝 크롭해 모든 핫스팟을 유지하고, 위아래 띠는 앰비언트
+   글로우와 HUD(힌트/이름표/테마)가 채우는 의도된 여백으로 만든다.
+   (일반 720px 블록의 위치 지정을 덮어써야 하므로 반드시 그 뒤에 온다) */
+@media (max-width: 720px) and (orientation: portrait) {
+  .app {
+    /* 모든 핫스팟(0.15~0.8 구간)이 시야에 남는 선까지만 확대 */
+    --room-w: min(134dvh, 165vw);
+    /* 방 높이의 절반 (4:3 → 높이 = 너비 × 0.75) — HUD 배치 기준점 */
+    --room-half: calc(var(--room-w) * 0.375);
+  }
+
+  /* 디오라마 뒤 은은한 무대 조명 */
+  .app::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: calc(var(--room-half) * 2 + 140px);
+    transform: translateY(-50%);
+    background: radial-gradient(
+      62% 52% at 50% 50%,
+      rgba(255, 190, 110, 0.16),
+      transparent 72%
+    );
+    pointer-events: none;
+  }
+  :root[data-theme='dark'] .app::before {
+    background: radial-gradient(
+      62% 52% at 50% 50%,
+      rgba(130, 160, 255, 0.1),
+      transparent 72%
+    );
+  }
+
+  .viewport {
+    width: var(--room-w);
+    max-width: none;
+    border-radius: 0;
+    /* 좌우는 화면 밖 — 보이는 위아래 경계만 무대처럼: 하이라이트 라인 + 드리움 그림자 */
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 -22px 44px rgba(30, 18, 8, 0.28),
+      0 30px 60px rgba(30, 18, 8, 0.42);
+  }
+  :root[data-theme='dark'] .viewport {
+    box-shadow:
+      0 -22px 44px rgba(0, 0, 0, 0.45),
+      0 30px 60px rgba(0, 0, 0, 0.6);
+  }
+
+  /* HUD를 위아래 띠 안으로 — 방 가장자리에 맞춰 배치 */
+  .hint {
+    top: auto;
+    bottom: min(calc(50% + var(--room-half) + 14px), calc(100% - 60px));
+  }
+  .hint.is-hidden {
+    transform: translate(-50%, 10px);
+  }
+  .nameplate {
+    bottom: auto;
+    top: min(calc(50% + var(--room-half) + 14px), calc(100% - 72px));
+  }
+  .theme-badge {
+    bottom: auto;
+    top: min(calc(50% + var(--room-half) + 14px), calc(100% - 72px));
   }
 }
 
