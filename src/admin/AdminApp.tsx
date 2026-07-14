@@ -89,7 +89,7 @@ export default function AdminApp({ repo }: { repo: AdminRepository }) {
   return (
     <div className="admin-shell">
       <header className="admin-header">
-        <h1>Only-One Room · 콘텐츠 관리</h1>
+        <h1>Gnuke's Portfolio · 콘텐츠 관리</h1>
         <div className="admin-header-right">
           <span className="admin-user">{session.email}</span>
           <button type="button" onClick={() => void repo.signOut()}>

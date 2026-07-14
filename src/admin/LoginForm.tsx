@@ -27,7 +27,7 @@ export default function LoginForm({ repo }: { repo: AdminRepository }) {
 
   return (
     <form className="admin-login" onSubmit={onSubmit}>
-      <h1 className="admin-login-title">Only-One Room · Admin</h1>
+      <h1 className="admin-login-title">Gnuke's Portfolio · Admin</h1>
       <label className="admin-field">
         이메일
         <input

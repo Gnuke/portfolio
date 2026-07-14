@@ -1,4 +1,4 @@
-# Only-One Room 🏠
+# Gnuke's Portfolio 🏠
 
 개발자의 자취방을 탐험하는 인터랙티브 포트폴리오 홈페이지.
 Navigation Bar 없이, 방 안의 오브젝트를 클릭해 프로젝트를 둘러봅니다.

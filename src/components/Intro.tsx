@@ -35,11 +35,11 @@ export default function Intro({ onDone }: { onDone: () => void }) {
       <div className="intro-glow" />
       <div className="intro-text">
         <div className="intro-boot">
-          $ open ~/only-one-room <span className="hint-cursor" aria-hidden="true" />
+          $ open ~/gnuke-portfolio <span className="hint-cursor" aria-hidden="true" />
         </div>
         <div className="intro-welcome">Welcome</div>
         <div className="intro-greet">{profile.greeting}</div>
-        <div className="intro-title">only-one-room</div>
+        <div className="intro-title">gnuke's portfolio</div>
       </div>
       <div className="intro-door left">
         <span className="knob" />
