@@ -5,5 +5,11 @@ dist-ssr
 .DS_Store
 .vite
 
-# 검토용 계정 자격증명 정리 후 포함 예정
+# 비공개 운영 문서 (관리자 페이지·계정 관련)
 사용설명서.txt
+
+# 로컬 개발 도구 설정
+.mcp.json
+
+# 실제 방 사진 — 공개 저장소에 올리지 않음
+References/MyRoom/*.jpg
