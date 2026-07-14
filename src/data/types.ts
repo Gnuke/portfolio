@@ -33,7 +33,7 @@ export interface ProjectRecord {
   images: ProjectImageRecord[]
 }
 
-export type TechCategory = 'Language' | 'Backend' | 'Frontend' | 'Infra' | 'Tool'
+export type TechCategory = 'Language' | 'Backend' | 'Frontend' | 'Database' | 'Infra' | 'Tool'
 
 export interface TechStackRecord {
   id: string
