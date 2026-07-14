@@ -1336,6 +1336,10 @@ button {
   .viewport-scroller::-webkit-scrollbar {
     display: none;
   }
+  /* 오브젝트를 보는 동안에는 스와이프 잠금 — 줌 프레임이 흔들리지 않게 */
+  .viewport-scroller.is-locked {
+    overflow-x: hidden;
+  }
 
   .viewport {
     width: var(--room-w);

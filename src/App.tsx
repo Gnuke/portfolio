@@ -11,7 +11,25 @@ export default function App() {
   const { theme, toggleTheme } = useTheme()
   const [introDone, setIntroDone] = useState(false)
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [panTx, setPanTx] = useState<number | null>(null)
   const scrollerRef = useRef<HTMLDivElement>(null)
+
+  /**
+   * 오브젝트 선택. 세로 모바일에서는 스크롤을 되돌리지 않고, 선택 순간
+   * 사용자가 보던 화면 중앙(뷰포트 x 비율)을 카메라 목표로 넘겨
+   * 현 위치에서 한 번의 모션으로 줌인되게 한다.
+   */
+  const selectObject = (id: string | null) => {
+    if (id) {
+      const el = scrollerRef.current
+      if (el && el.scrollWidth > el.clientWidth) {
+        setPanTx((el.scrollLeft + el.clientWidth / 2) / el.scrollWidth)
+      } else {
+        setPanTx(null)
+      }
+    }
+    setSelectedId(id)
+  }
 
   const selectedObject =
     ROOM_OBJECTS.find((o) => o.id === selectedId) ?? null
@@ -35,28 +53,19 @@ export default function App() {
     el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2
   }, [])
 
-  // 오브젝트 선택 시 카메라 줌의 기준(뷰포트 중앙)이 화면 중앙과 일치하도록
-  // 스크롤을 중앙으로 복귀시킨다.
-  useEffect(() => {
-    if (!selectedId) return
-    const el = scrollerRef.current
-    if (!el) return
-    el.scrollTo?.({
-      left: (el.scrollWidth - el.clientWidth) / 2,
-      behavior: 'smooth',
-    })
-  }, [selectedId])
-
   return (
     <div className="app">
       {!introDone && <Intro onDone={() => setIntroDone(true)} />}
 
-      <div className="viewport-scroller" ref={scrollerRef}>
+      <div
+        className={`viewport-scroller${selectedId ? ' is-locked' : ''}`}
+        ref={scrollerRef}
+      >
         <div className="viewport">
-          <CameraController focus={focus} panelOpen={panelOpen}>
+          <CameraController focus={focus} panelOpen={panelOpen} panTx={panTx}>
             <Room
               selectedId={selectedId}
-              onSelect={setSelectedId}
+              onSelect={selectObject}
               onToggleTheme={toggleTheme}
               theme={theme}
             />
@@ -94,7 +103,7 @@ export default function App() {
           <button
             type="button"
             className="back-button"
-            onClick={() => setSelectedId(null)}
+            onClick={() => selectObject(null)}
           >
             ← 방 전체 보기 <kbd>esc</kbd>
           </button>
@@ -113,7 +122,7 @@ export default function App() {
         {/* 정보 패널 (Glassmorphism) */}
         <InformationPanel
           object={selectedObject}
-          onClose={() => setSelectedId(null)}
+          onClose={() => selectObject(null)}
         />
       </div>
     </div>

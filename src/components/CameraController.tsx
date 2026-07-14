@@ -17,17 +17,24 @@ import type { FocusPoint } from '../data/scene'
 export default function CameraController({
   focus,
   panelOpen,
+  panTx,
   children,
 }: {
   focus: FocusPoint | null
   panelOpen: boolean
+  /**
+   * 세로 모바일(스와이프 크롭)에서 선택 순간의 화면 중앙(뷰포트 x 비율).
+   * 스크롤을 중앙으로 되돌리는 대신, 사용자가 보던 위치에서 그대로
+   * 줌인하도록 목표 지점을 보정한다. 스와이프 불가 화면에서는 null.
+   */
+  panTx?: number | null
   children: ReactNode
 }) {
   const isNarrow =
     typeof window !== 'undefined' &&
     window.matchMedia('(max-width: 720px)').matches
 
-  const tx = focus && panelOpen && !isNarrow ? 0.33 : 0.5
+  const tx = focus && panelOpen && !isNarrow ? 0.33 : (panTx ?? 0.5)
   const ty = focus && panelOpen && isNarrow ? 0.29 : 0.5
 
   const transform = focus
