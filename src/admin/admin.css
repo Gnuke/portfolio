@@ -1,0 +1,262 @@
+/* Only-One Room — Admin (방문자 CSS와 완전 분리) */
+
+:root {
+  --a-bg: #f4f1ea;
+  --a-surface: #ffffff;
+  --a-ink: #2b2620;
+  --a-muted: #8a8175;
+  --a-line: #e2dccf;
+  --a-accent: #b0713f;
+  --a-accent-ink: #fff8ef;
+  --a-danger: #c0503f;
+  --a-radius: 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--a-bg);
+  color: var(--a-ink);
+  font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Segoe UI', sans-serif;
+  line-height: 1.55;
+}
+
+button {
+  font: inherit;
+  padding: 8px 14px;
+  border: 1px solid var(--a-line);
+  border-radius: 8px;
+  background: var(--a-surface);
+  color: var(--a-ink);
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: var(--a-accent);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+input,
+select,
+textarea {
+  font: inherit;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--a-line);
+  border-radius: 8px;
+  background: var(--a-surface);
+  color: var(--a-ink);
+}
+
+textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.admin-shell {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 20px 80px;
+}
+
+/* ── 로그인 ── */
+.admin-login {
+  max-width: 360px;
+  margin: 12vh auto 0;
+  padding: 28px;
+  background: var(--a-surface);
+  border: 1px solid var(--a-line);
+  border-radius: var(--a-radius);
+  display: grid;
+  gap: 14px;
+}
+
+.admin-login-title {
+  margin: 0 0 6px;
+  font-size: 1.15rem;
+}
+
+.admin-field {
+  display: grid;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: var(--a-muted);
+}
+
+.admin-error {
+  margin: 0;
+  color: var(--a-danger);
+  font-size: 0.88rem;
+}
+
+.admin-notice {
+  color: var(--a-muted);
+  font-size: 0.88rem;
+}
+
+/* ── 헤더 ── */
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--a-line);
+  margin-bottom: 24px;
+}
+
+.admin-header h1 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.admin-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-user {
+  color: var(--a-muted);
+  font-size: 0.88rem;
+}
+
+/* ── 섹션 / 목록 ── */
+.admin-main {
+  display: grid;
+  gap: 36px;
+}
+
+.admin-section h2 {
+  font-size: 1.05rem;
+  margin: 0 0 12px;
+}
+
+.admin-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.admin-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.admin-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--a-surface);
+  border: 1px solid var(--a-line);
+  border-radius: var(--a-radius);
+}
+
+.admin-list .grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-badge {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--a-line);
+  color: var(--a-muted);
+  white-space: nowrap;
+}
+
+.admin-badge.status-current {
+  background: #eaf3e6;
+  color: #4c7a3d;
+  border-color: #cfe3c6;
+}
+
+.admin-badge.status-completed {
+  background: #e8eef6;
+  color: #3d5f8a;
+  border-color: #cddcee;
+}
+
+.admin-badge.status-planned {
+  background: #f6efe2;
+  color: #97701f;
+  border-color: #ecdcba;
+}
+
+/* ── 폼 ── */
+.admin-form {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  background: var(--a-surface);
+  border: 1px solid var(--a-line);
+  border-radius: var(--a-radius);
+}
+
+.admin-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.admin-form-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.admin-form-actions .primary {
+  background: var(--a-accent);
+  border-color: var(--a-accent);
+  color: var(--a-accent-ink);
+}
+
+/* ── 이미지 업로더 ── */
+.admin-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-image-card {
+  width: 132px;
+  display: grid;
+  gap: 6px;
+  font-size: 0.78rem;
+}
+
+.admin-image-card img {
+  width: 132px;
+  height: 88px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--a-line);
+}
+
+.admin-image-card .is-cover {
+  color: var(--a-accent);
+  font-weight: 600;
+}
+
+.admin-image-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.admin-image-actions button {
+  padding: 3px 8px;
+  font-size: 0.75rem;
+}

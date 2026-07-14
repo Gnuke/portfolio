@@ -1,0 +1,7 @@
+ 1. 프로필 - 정진욱/Gnuke , "안녕하세요. 정진욱입니다." , https://github.com/Gnuke
+ 2. Melolist-v3 - 다양한 방식을 이용해 음악을 검색하는 서비스 / 음악에 대한 메타데이터가 기억나지 않을 때 음성인식을 통해
+ 데이터가 없어도 찾을 수 있도록 하고 이를 기반으로 더 공정한 음원차트 랭킹 시스템을 도입하기 위해 개발 / 
+ React-Native, JDK 21, Spring Boot 3.5, Spring AI(예정) / 예정 / 마이그레이션 진행 중
+ 3. 기술 스택 - Java, Python, Spring Boot, JPA, JavaScript, React, Vue.js, Next.js, Nuxt.js, MariaDB, MySQL, PostgreSQL, Redis, AWS, Docker
+ 4. 개발 예정 프로젝트 - 당구 플랫폼, 미구현
+ 

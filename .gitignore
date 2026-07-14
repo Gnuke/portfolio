@@ -1,0 +1,9 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+.vite
+
+# 검토용 계정 자격증명 정리 후 포함 예정
+사용설명서.txt
