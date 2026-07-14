@@ -108,6 +108,11 @@ button {
   overflow: hidden;
 }
 
+/* 데스크톱에선 보이지 않는 래퍼 — 모바일 세로에서만 가로 스와이프 컨테이너가 된다 */
+.viewport-scroller {
+  display: contents;
+}
+
 .viewport {
   position: relative;
   width: min(100vw, 133vh);
@@ -419,6 +424,10 @@ button {
 :root[data-theme='dark'] .hint-prompt {
   color: #e6b566;
 }
+.hint-text-mobile {
+  display: none;
+}
+
 .hint-cursor {
   display: inline-block;
   width: 7px;
@@ -1315,6 +1324,19 @@ button {
     );
   }
 
+  /* 방을 좌우로 둘러보는 스와이프 컨테이너 (시작 위치는 App에서 중앙으로 설정) */
+  .viewport-scroller {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+  .viewport-scroller::-webkit-scrollbar {
+    display: none;
+  }
+
   .viewport {
     width: var(--room-w);
     max-width: none;
@@ -1336,6 +1358,12 @@ button {
   .hint {
     top: auto;
     bottom: min(calc(50% + var(--room-half) + 14px), calc(100% - 60px));
+  }
+  .hint-text-desktop {
+    display: none;
+  }
+  .hint-text-mobile {
+    display: inline;
   }
   .hint.is-hidden {
     transform: translate(-50%, 10px);
