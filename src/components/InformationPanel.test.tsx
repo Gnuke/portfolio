@@ -4,7 +4,13 @@ import InformationPanel from './InformationPanel'
 import { ContentContext } from '../context/ContentContext'
 import { ROOM_OBJECTS } from '../data/scene'
 import type { RoomContent } from '../data/types'
-import { buildImage, buildProject, buildRoomContent, buildTech } from '../test/fakes'
+import {
+  buildCategory,
+  buildImage,
+  buildProject,
+  buildRoomContent,
+  buildTech,
+} from '../test/fakes'
 
 const laptop = ROOM_OBJECTS.find((o) => o.id === 'laptop')!
 const bookshelf = ROOM_OBJECTS.find((o) => o.id === 'bookshelf')!
@@ -110,16 +116,45 @@ describe('InformationPanel — 화이트보드/책장 (FR-016)', () => {
     expect(screen.getByText(/준비 중/)).toBeInTheDocument()
   })
 
-  test('책장은 기술 스택을 표시하고 미분류는 Tool 선반에 놓인다', () => {
+  test('책장은 기술 스택을 표시하고 분류 없는 책은 미분류 선반에 놓인다', () => {
     const content = buildRoomContent({
       techStack: [
         buildTech({ name: 'Java', category: 'Language' }),
         buildTech({ name: 'MyTool', category: null }),
       ],
     })
-    renderPanel(bookshelf, content)
+    const { container } = renderPanel(bookshelf, content)
     expect(screen.getByText('Java')).toBeInTheDocument()
     expect(screen.getByText('MyTool')).toBeInTheDocument()
+    const labels = [...container.querySelectorAll('.shelf-label b')].map((el) => el.textContent)
+    expect(labels).toEqual(['language', '미분류'])
+  })
+
+  test('선반은 techCategories의 순서를 따른다', () => {
+    const content = buildRoomContent({
+      techCategories: [
+        buildCategory({ name: 'Tool', displayOrder: 1 }),
+        buildCategory({ name: 'Language', displayOrder: 2 }),
+      ],
+      techStack: [
+        buildTech({ name: 'Java', category: 'Language' }),
+        buildTech({ name: 'Git', category: 'Tool' }),
+      ],
+    })
+    const { container } = renderPanel(bookshelf, content)
+    const labels = [...container.querySelectorAll('.shelf-label b')].map((el) => el.textContent)
+    expect(labels).toEqual(['tool', 'language'])
+  })
+
+  test('삭제된 선반을 가리키는 책은 미분류 선반으로 흘러내린다', () => {
+    const content = buildRoomContent({
+      techCategories: [buildCategory({ name: 'Language', displayOrder: 1 })],
+      techStack: [buildTech({ name: 'Ghost', category: '없어진선반' })],
+    })
+    const { container } = renderPanel(bookshelf, content)
+    expect(screen.getByText('Ghost')).toBeInTheDocument()
+    const labels = [...container.querySelectorAll('.shelf-label b')].map((el) => el.textContent)
+    expect(labels).toEqual(['미분류'])
   })
 
   test('기술 스택이 0건이면 준비 중 안내를 표시한다', () => {

@@ -48,4 +48,16 @@ describe('contentCache — FR-018 ①단계', () => {
     expect(loadContentCache()).toBeNull()
     expect(localStorage.getItem(CACHE_KEY)).toBeNull()
   })
+
+  test('선반 목록이 없는 구버전 캐시는 무효화한다', () => {
+    localStorage.setItem(
+      CACHE_KEY,
+      JSON.stringify({
+        savedAt: '2026-07-13T00:00:00.000Z',
+        content: { laptopProjects: [], plannedProjects: [], techStack: [] },
+      }),
+    )
+    expect(loadContentCache()).toBeNull()
+    expect(localStorage.getItem(CACHE_KEY)).toBeNull()
+  })
 })

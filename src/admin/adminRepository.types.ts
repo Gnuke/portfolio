@@ -7,6 +7,7 @@ import type {
   ProjectRecord,
   ProjectStatus,
   TechCategory,
+  TechCategoryRecord,
   TechStackRecord,
 } from '../data/types'
 
@@ -25,6 +26,11 @@ export interface TechInput {
   category?: TechCategory | null
   color?: string
   displayOrder?: number | null
+}
+
+export interface TechCategoryInput {
+  name: string
+  displayOrder?: number
 }
 
 export interface AdminSession {
@@ -54,4 +60,10 @@ export interface AdminRepository {
   createTech(input: TechInput): Promise<TechStackRecord>
   updateTech(id: string, input: TechInput): Promise<TechStackRecord>
   deleteTech(id: string): Promise<void>
+
+  // 선반(기술 분류) 관리 — 이름 변경은 소속 기술에 전파, 삭제 시 미분류로
+  listCategories(): Promise<TechCategoryRecord[]>
+  createCategory(input: TechCategoryInput): Promise<TechCategoryRecord>
+  updateCategory(id: string, input: TechCategoryInput): Promise<TechCategoryRecord>
+  deleteCategory(id: string): Promise<void>
 }

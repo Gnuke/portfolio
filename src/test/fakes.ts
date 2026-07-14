@@ -6,12 +6,14 @@ import type {
   AdminRepository,
   AdminSession,
   ProjectInput,
+  TechCategoryInput,
   TechInput,
 } from '../admin/adminRepository.types'
 import type {
   ProjectImageRecord,
   ProjectRecord,
   RoomContent,
+  TechCategoryRecord,
   TechStackRecord,
 } from '../data/types'
 
@@ -55,11 +57,28 @@ export function buildTech(overrides: Partial<TechStackRecord> = {}): TechStackRe
   }
 }
 
+export function buildCategory(overrides: Partial<TechCategoryRecord> = {}): TechCategoryRecord {
+  return {
+    id: nextId(),
+    name: 'Language',
+    displayOrder: 1,
+    ...overrides,
+  }
+}
+
+/** DB 시드와 동일한 기본 선반 구성 */
+export function defaultCategories(): TechCategoryRecord[] {
+  return ['Language', 'Backend', 'Frontend', 'Database', 'Infra', 'Tool'].map((name, i) =>
+    buildCategory({ name, displayOrder: i + 1 }),
+  )
+}
+
 export function buildRoomContent(overrides: Partial<RoomContent> = {}): RoomContent {
   return {
     laptopProjects: [],
     plannedProjects: [],
     techStack: [],
+    techCategories: defaultCategories(),
     source: 'remote',
     ...overrides,
   }
@@ -70,6 +89,7 @@ export interface FakeAdminRepository extends AdminRepository {
   session: AdminSession | null
   projects: ProjectRecord[]
   tech: TechStackRecord[]
+  categories: TechCategoryRecord[]
 }
 
 export function createFakeAdminRepository(init?: {
@@ -78,6 +98,7 @@ export function createFakeAdminRepository(init?: {
   session?: AdminSession | null
   projects?: ProjectRecord[]
   tech?: TechStackRecord[]
+  categories?: TechCategoryRecord[]
 }): FakeAdminRepository {
   const email = init?.email ?? 'admin@example.com'
   const password = init?.password ?? 'correct-password'
@@ -89,6 +110,7 @@ export function createFakeAdminRepository(init?: {
     session: init?.session ?? null,
     projects: init?.projects ?? [],
     tech: init?.tech ?? [],
+    categories: init?.categories ?? defaultCategories(),
 
     async signIn(inputEmail, inputPassword) {
       if (inputEmail !== email || inputPassword !== password) {
@@ -194,6 +216,50 @@ export function createFakeAdminRepository(init?: {
     },
     async deleteTech(id) {
       repo.tech = repo.tech.filter((t) => t.id !== id)
+    },
+
+    async listCategories() {
+      return [...repo.categories].sort(
+        (a, b) => a.displayOrder - b.displayOrder || a.name.localeCompare(b.name),
+      )
+    },
+    async createCategory(input: TechCategoryInput) {
+      if (repo.categories.some((c) => c.name === input.name)) {
+        throw new Error('duplicate category name')
+      }
+      const item = buildCategory({
+        name: input.name,
+        displayOrder:
+          input.displayOrder ?? Math.max(0, ...repo.categories.map((c) => c.displayOrder)) + 1,
+      })
+      repo.categories.push(item)
+      return item
+    },
+    async updateCategory(id, input: TechCategoryInput) {
+      const idx = repo.categories.findIndex((c) => c.id === id)
+      if (idx < 0) throw new Error('not found')
+      const prevName = repo.categories[idx].name
+      const updated: TechCategoryRecord = {
+        ...repo.categories[idx],
+        name: input.name,
+        displayOrder: input.displayOrder ?? repo.categories[idx].displayOrder,
+      }
+      repo.categories[idx] = updated
+      // FK on update cascade 재현 — 소속 기술의 분류 이름도 함께 변경
+      repo.tech = repo.tech.map((t) =>
+        t.category === prevName ? { ...t, category: updated.name } : t,
+      )
+      return updated
+    },
+    async deleteCategory(id) {
+      const target = repo.categories.find((c) => c.id === id)
+      repo.categories = repo.categories.filter((c) => c.id !== id)
+      // FK on delete set null 재현 — 소속 기술은 미분류로
+      if (target) {
+        repo.tech = repo.tech.map((t) =>
+          t.category === target.name ? { ...t, category: null } : t,
+        )
+      }
     },
   }
 

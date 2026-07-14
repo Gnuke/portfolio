@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import TechStackManager from './TechStackManager'
-import { buildTech, createFakeAdminRepository } from '../test/fakes'
+import { buildCategory, buildTech, createFakeAdminRepository } from '../test/fakes'
 import { techColorFor } from '../data/techColors'
 
 describe('TechStackManager', () => {
@@ -99,6 +99,74 @@ describe('TechStackManager', () => {
       item.id,
       expect.objectContaining({ name: 'React', color: techColorFor('React') }),
     )
+  })
+
+  test('분류 드롭다운은 저장된 선반 목록으로 채워진다', async () => {
+    const repo = createFakeAdminRepository({
+      categories: [buildCategory({ name: '한글선반', displayOrder: 1 })],
+    })
+    render(<TechStackManager repo={repo} />)
+
+    expect(await screen.findByRole('option', { name: '한글선반' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: '미분류' })).toBeInTheDocument()
+  })
+
+  test('선반을 추가하면 분류 드롭다운에도 나타난다', async () => {
+    const user = userEvent.setup()
+    const repo = createFakeAdminRepository()
+    render(<TechStackManager repo={repo} />)
+
+    await user.type(await screen.findByLabelText('새 선반 이름'), 'AI')
+    await user.click(screen.getByRole('button', { name: '선반 추가' }))
+
+    expect(await screen.findByRole('option', { name: 'AI' })).toBeInTheDocument()
+  })
+
+  test('선반 이름을 바꾸면 소속 기술의 분류 표시도 갱신된다', async () => {
+    const user = userEvent.setup()
+    const repo = createFakeAdminRepository({
+      tech: [buildTech({ name: 'Spring Boot', category: 'Backend' })],
+    })
+    render(<TechStackManager repo={repo} />)
+
+    await user.click(await screen.findByRole('button', { name: 'Backend 선반 이름 변경' }))
+    const input = screen.getByLabelText('선반 이름 수정')
+    await user.clear(input)
+    await user.type(input, 'Server')
+    await user.click(screen.getByRole('button', { name: '저장' }))
+
+    expect(await screen.findByText('Server', { selector: '.admin-badge' })).toBeInTheDocument()
+  })
+
+  test('선반 삭제는 확인 후 진행되고 소속 기술은 미분류로 표시된다', async () => {
+    const user = userEvent.setup()
+    const repo = createFakeAdminRepository({
+      tech: [buildTech({ name: 'React', category: 'Frontend' })],
+    })
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true)
+    render(<TechStackManager repo={repo} />)
+
+    await user.click(await screen.findByRole('button', { name: 'Frontend 선반 삭제' }))
+
+    expect(confirmSpy).toHaveBeenCalled()
+    expect(await screen.findByText('미분류', { selector: '.admin-badge' })).toBeInTheDocument()
+    confirmSpy.mockRestore()
+  })
+
+  test('선반을 위로 옮기면 새 순서가 저장된다', async () => {
+    const user = userEvent.setup()
+    const repo = createFakeAdminRepository({
+      categories: [
+        buildCategory({ name: 'Language', displayOrder: 1 }),
+        buildCategory({ name: 'Backend', displayOrder: 2 }),
+      ],
+    })
+    render(<TechStackManager repo={repo} />)
+
+    await user.click(await screen.findByRole('button', { name: 'Backend 위로' }))
+
+    const names = (await repo.listCategories()).map((c) => c.name)
+    expect(names).toEqual(['Backend', 'Language'])
   })
 
   test('삭제는 확인 절차 후에만 deleteTech를 호출한다', async () => {

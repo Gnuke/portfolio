@@ -97,12 +97,18 @@ const techRows = [
   },
 ]
 
+const categoryRows = [
+  { id: 'c2', name: 'Backend', display_order: 2, created_at: '2026-01-01T00:00:00.000Z' },
+  { id: 'c1', name: 'Language', display_order: 1, created_at: '2026-01-01T00:00:00.000Z' },
+]
+
 describe('contentRepository.fetchRoomContent — FR-016', () => {
-  test('세 테이블을 RoomContent로 매핑한다 (정렬·URL 파생·source: remote)', async () => {
+  test('네 테이블을 RoomContent로 매핑한다 (정렬·URL 파생·source: remote)', async () => {
     const client = createReadStub({
       projects: { data: projectRows, error: null },
       project_images: { data: imageRows, error: null },
       tech_stack: { data: techRows, error: null },
+      tech_categories: { data: categoryRows, error: null },
     })
 
     const content = await fetchRoomContent(client)
@@ -124,6 +130,11 @@ describe('contentRepository.fetchRoomContent — FR-016', () => {
     expect(content.techStack).toEqual([
       { id: 't1', name: 'Java', category: 'Language', color: '#e76f51', displayOrder: null },
     ])
+    // 선반은 display_order 오름차순
+    expect(content.techCategories).toEqual([
+      { id: 'c1', name: 'Language', displayOrder: 1 },
+      { id: 'c2', name: 'Backend', displayOrder: 2 },
+    ])
   })
 
   test('조회 실패 시 reject된다 (폴백은 ContentContext 책임)', async () => {
@@ -131,6 +142,7 @@ describe('contentRepository.fetchRoomContent — FR-016', () => {
       projects: { data: null, error: { message: 'down' } },
       project_images: { data: [], error: null },
       tech_stack: { data: [], error: null },
+      tech_categories: { data: [], error: null },
     })
 
     await expect(fetchRoomContent(client)).rejects.toThrow()

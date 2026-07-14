@@ -1,11 +1,17 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { AdminRepository, ProjectInput, TechInput } from './adminRepository.types'
+import type {
+  AdminRepository,
+  ProjectInput,
+  TechCategoryInput,
+  TechInput,
+} from './adminRepository.types'
 import type {
   ProjectImageRecord,
   ProjectLinkRecord,
   ProjectRecord,
   ProjectStatus,
   TechCategory,
+  TechCategoryRecord,
   TechStackRecord,
 } from '../data/types'
 
@@ -39,6 +45,13 @@ interface TechRow {
   category: string | null
   color: string
   display_order: number | null
+  created_at: string
+}
+
+interface CategoryRow {
+  id: string
+  name: string
+  display_order: number
   created_at: string
 }
 
@@ -83,6 +96,21 @@ function mapTechRow(row: TechRow): TechStackRecord {
     name: row.name,
     category: (row.category as TechCategory | null) ?? null,
     color: row.color,
+    displayOrder: row.display_order,
+  }
+}
+
+function toCategoryRow(input: TechCategoryInput) {
+  return {
+    name: input.name,
+    ...(input.displayOrder !== undefined ? { display_order: input.displayOrder } : {}),
+  }
+}
+
+function mapCategoryRow(row: CategoryRow): TechCategoryRecord {
+  return {
+    id: row.id,
+    name: row.name,
     displayOrder: row.display_order,
   }
 }
@@ -266,6 +294,43 @@ export function createAdminRepository(client: SupabaseClient): AdminRepository {
 
     async deleteTech(id) {
       const res = await client.from('tech_stack').delete().eq('id', id)
+      throwIf(res.error)
+    },
+
+    /* ── 선반(기술 분류) 관리 ── */
+
+    async listCategories() {
+      const res = await client
+        .from('tech_categories')
+        .select('*')
+        .order('display_order', { ascending: true })
+      throwIf(res.error)
+      return ((res.data ?? []) as CategoryRow[]).map(mapCategoryRow)
+    },
+
+    async createCategory(input) {
+      const res = await client
+        .from('tech_categories')
+        .insert(toCategoryRow(input))
+        .select()
+        .single()
+      throwIf(res.error)
+      return mapCategoryRow(res.data as CategoryRow)
+    },
+
+    async updateCategory(id, input) {
+      const res = await client
+        .from('tech_categories')
+        .update(toCategoryRow(input))
+        .eq('id', id)
+        .select()
+        .single()
+      throwIf(res.error)
+      return mapCategoryRow(res.data as CategoryRow)
+    },
+
+    async deleteCategory(id) {
+      const res = await client.from('tech_categories').delete().eq('id', id)
       throwIf(res.error)
     },
   }

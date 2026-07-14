@@ -1,11 +1,12 @@
 import {
   currentProjects,
   futureProjects,
+  techCategories,
   techStack,
   type FutureProject,
   type Project,
 } from './content'
-import type { ProjectRecord, RoomContent, TechStackRecord } from './types'
+import type { ProjectRecord, RoomContent, TechCategoryRecord, TechStackRecord } from './types'
 
 /** 정적 데이터의 기준 시점 — PRD 작성일 */
 const STATIC_EPOCH = '2026-07-06T00:00:00.000Z'
@@ -60,6 +61,13 @@ export function staticRoomContent(): RoomContent {
         category: t.category,
         color: t.color,
         displayOrder: i,
+      }),
+    ),
+    techCategories: techCategories.map(
+      (name, i): TechCategoryRecord => ({
+        id: `static-cat-${i}`,
+        name,
+        displayOrder: i + 1,
       }),
     ),
     source: 'static',

@@ -29,7 +29,8 @@ export function loadContentCache(): RoomContent | null {
       !content ||
       !Array.isArray(content.laptopProjects) ||
       !Array.isArray(content.plannedProjects) ||
-      !Array.isArray(content.techStack)
+      !Array.isArray(content.techStack) ||
+      !Array.isArray(content.techCategories)
     ) {
       throw new Error('cache schema mismatch')
     }
@@ -37,6 +38,7 @@ export function loadContentCache(): RoomContent | null {
       laptopProjects: content.laptopProjects,
       plannedProjects: content.plannedProjects,
       techStack: content.techStack,
+      techCategories: content.techCategories,
       source: 'cache',
     }
   } catch {

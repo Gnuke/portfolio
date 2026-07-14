@@ -38,8 +38,18 @@ export interface Tech {
   name: string
   /** 책 표지 색상 (기술 브랜드 컬러 계열) */
   color: string
-  category: 'Language' | 'Backend' | 'Frontend' | 'Infra' | 'Tool'
+  category: string
 }
+
+/** 책장 선반 순서 — 원격(tech_categories) 폴백용 기본값 */
+export const techCategories: string[] = [
+  'Language',
+  'Backend',
+  'Frontend',
+  'Database',
+  'Infra',
+  'Tool',
+]
 
 export interface FutureProject {
   title: string
@@ -92,10 +102,10 @@ export const techStack: Tech[] = [
   { name: 'Vue.js', color: '#42b883', category: 'Frontend' },
   { name: 'Next.js', color: '#5b6472', category: 'Frontend' },
   { name: 'Nuxt.js', color: '#35b98a', category: 'Frontend' },
-  { name: 'MariaDB', color: '#a86b4c', category: 'Backend' },
-  { name: 'MySQL', color: '#4d7f9c', category: 'Backend' },
-  { name: 'PostgreSQL', color: '#4a6fa5', category: 'Backend' },
-  { name: 'Redis', color: '#d1603a', category: 'Backend' },
+  { name: 'MariaDB', color: '#a86b4c', category: 'Database' },
+  { name: 'MySQL', color: '#4d7f9c', category: 'Database' },
+  { name: 'PostgreSQL', color: '#4a6fa5', category: 'Database' },
+  { name: 'Redis', color: '#d1603a', category: 'Database' },
   { name: 'AWS', color: '#e2933a', category: 'Infra' },
   { name: 'Docker', color: '#4d84c4', category: 'Infra' },
 ]

@@ -2,12 +2,7 @@ import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import type { RoomObjectConfig } from '../data/scene'
 import { useRoomContent } from '../context/ContentContext'
-import type {
-  ProjectRecord,
-  ProjectStatus,
-  TechCategory,
-  TechStackRecord,
-} from '../data/types'
+import type { ProjectRecord, ProjectStatus, TechStackRecord } from '../data/types'
 
 /**
  * InformationPanel — 선택된 오브젝트의 정보를 Glassmorphism 패널로 표시.
@@ -169,19 +164,22 @@ function ProjectPanel() {
   )
 }
 
-const SHELF_ORDER: TechCategory[] = ['Language', 'Backend', 'Frontend', 'Infra', 'Tool']
-
-/* 책장 — 기술 스택, 미분류는 Tool 선반 (FR-016) */
+/* 책장 — 기술 스택. 선반 구성·순서는 admin에서 관리(tech_categories),
+   분류가 없거나 삭제된 선반의 책은 마지막 '미분류' 선반에 놓인다. */
 function StackPanel() {
-  const { techStack } = useRoomContent()
+  const { techStack, techCategories } = useRoomContent()
 
   if (techStack.length === 0) return <EmptyNotice what="기술 스택" />
 
-  const shelfOf = (t: TechStackRecord): TechCategory => t.category ?? 'Tool'
-  const shelves = SHELF_ORDER.map((category) => ({
-    category,
-    books: techStack.filter((t) => shelfOf(t) === category),
-  })).filter((s) => s.books.length > 0)
+  const knownNames = new Set(techCategories.map((c) => c.name))
+  const shelfOf = (t: TechStackRecord): string =>
+    t.category != null && knownNames.has(t.category) ? t.category : '미분류'
+  const shelves = [...techCategories.map((c) => c.name), '미분류']
+    .map((category) => ({
+      category,
+      books: techStack.filter((t) => shelfOf(t) === category),
+    }))
+    .filter((s) => s.books.length > 0)
 
   return (
     <div className="shelves">

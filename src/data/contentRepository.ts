@@ -7,6 +7,7 @@ import type {
   ProjectStatus,
   RoomContent,
   TechCategory,
+  TechCategoryRecord,
   TechStackRecord,
 } from './types'
 
@@ -41,6 +42,12 @@ interface TechRow {
   display_order: number | null
 }
 
+interface CategoryRow {
+  id: string
+  name: string
+  display_order: number
+}
+
 function compareTech(a: TechStackRecord, b: TechStackRecord): number {
   if (a.displayOrder != null && b.displayOrder != null) return a.displayOrder - b.displayOrder
   if (a.displayOrder != null) return -1
@@ -52,12 +59,13 @@ function compareTech(a: TechStackRecord, b: TechStackRecord): number {
 export async function fetchRoomContent(
   client: SupabaseClient = getSupabaseClient(),
 ): Promise<RoomContent> {
-  const [projectsRes, imagesRes, techRes] = await Promise.all([
+  const [projectsRes, imagesRes, techRes, categoriesRes] = await Promise.all([
     client.from('projects').select('*'),
     client.from('project_images').select('*'),
     client.from('tech_stack').select('*'),
+    client.from('tech_categories').select('*'),
   ])
-  for (const res of [projectsRes, imagesRes, techRes]) {
+  for (const res of [projectsRes, imagesRes, techRes, categoriesRes]) {
     if (res.error) throw new Error(res.error.message)
   }
 
@@ -94,10 +102,21 @@ export async function fetchRoomContent(
     )
     .sort(compareTech)
 
+  const techCategories = ((categoriesRes.data ?? []) as CategoryRow[])
+    .map(
+      (row): TechCategoryRecord => ({
+        id: row.id,
+        name: row.name,
+        displayOrder: row.display_order,
+      }),
+    )
+    .sort((a, b) => a.displayOrder - b.displayOrder || a.name.localeCompare(b.name))
+
   return {
     laptopProjects: sortProjectsForLaptop(projects),
     plannedProjects: sortPlannedProjects(projects),
     techStack,
+    techCategories,
     source: 'remote',
   }
 }

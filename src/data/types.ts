@@ -33,7 +33,14 @@ export interface ProjectRecord {
   images: ProjectImageRecord[]
 }
 
-export type TechCategory = 'Language' | 'Backend' | 'Frontend' | 'Database' | 'Infra' | 'Tool'
+/** 동적 카테고리(선반) — admin에서 추가·삭제하므로 고정 유니언이 아니다 */
+export type TechCategory = string
+
+export interface TechCategoryRecord {
+  id: string
+  name: string
+  displayOrder: number
+}
 
 export interface TechStackRecord {
   id: string
@@ -53,5 +60,7 @@ export interface RoomContent {
   plannedProjects: ProjectRecord[]
   /** 책장 */
   techStack: TechStackRecord[]
+  /** 책장 선반 순서 (display_order 오름차순 정렬 완료) */
+  techCategories: TechCategoryRecord[]
   source: ContentSource
 }

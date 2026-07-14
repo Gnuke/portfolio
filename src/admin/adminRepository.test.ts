@@ -367,3 +367,67 @@ describe('adminRepository — 기술 스택 CRUD', () => {
     expect(queries.tech_stack[0].eq).toHaveBeenCalledWith('id', 't1')
   })
 })
+
+const categoryRow = {
+  id: 'c1',
+  name: 'Database',
+  display_order: 4,
+  created_at: '2026-07-14T00:00:00.000Z',
+}
+
+describe('adminRepository — 선반(분류) CRUD', () => {
+  test('listCategories는 display_order 순으로 조회해 도메인 타입으로 매핑한다', async () => {
+    const { client, queries } = createDbStub({
+      tech_categories: [{ data: [categoryRow], error: null }],
+    })
+    const repo = createAdminRepository(client)
+
+    expect(await repo.listCategories()).toEqual([
+      { id: 'c1', name: 'Database', displayOrder: 4 },
+    ])
+    expect(queries.tech_categories[0].order).toHaveBeenCalledWith('display_order', {
+      ascending: true,
+    })
+  })
+
+  test('createCategory는 이름과 순서를 snake_case로 insert한다', async () => {
+    const { client, queries } = createDbStub({
+      tech_categories: [{ data: categoryRow, error: null }],
+    })
+    const repo = createAdminRepository(client)
+
+    await repo.createCategory({ name: 'Database', displayOrder: 4 })
+
+    expect(queries.tech_categories[0].insert).toHaveBeenCalledWith({
+      name: 'Database',
+      display_order: 4,
+    })
+  })
+
+  test('updateCategory는 해당 id 행을 갱신한다', async () => {
+    const { client, queries } = createDbStub({
+      tech_categories: [{ data: categoryRow, error: null }],
+    })
+    const repo = createAdminRepository(client)
+
+    await repo.updateCategory('c1', { name: 'DB', displayOrder: 2 })
+
+    expect(queries.tech_categories[0].update).toHaveBeenCalledWith({
+      name: 'DB',
+      display_order: 2,
+    })
+    expect(queries.tech_categories[0].eq).toHaveBeenCalledWith('id', 'c1')
+  })
+
+  test('deleteCategory는 해당 id 행을 삭제한다', async () => {
+    const { client, queries } = createDbStub({
+      tech_categories: [{ data: null, error: null }],
+    })
+    const repo = createAdminRepository(client)
+
+    await repo.deleteCategory('c1')
+
+    expect(queries.tech_categories[0].delete).toHaveBeenCalled()
+    expect(queries.tech_categories[0].eq).toHaveBeenCalledWith('id', 'c1')
+  })
+})

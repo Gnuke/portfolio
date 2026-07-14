@@ -169,6 +169,34 @@ textarea {
   min-width: 0;
 }
 
+/* 선반(분류) 관리 */
+.admin-shelves {
+  margin-bottom: 20px;
+  padding: 14px;
+  border: 1px dashed var(--a-line);
+  border-radius: var(--a-radius);
+}
+
+.admin-shelves h3 {
+  margin: 0 0 4px;
+  font-size: 0.95rem;
+}
+
+.admin-hint {
+  margin: 0 0 10px;
+  font-size: 0.8rem;
+  color: var(--a-muted);
+}
+
+.admin-move {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.admin-move button {
+  padding: 2px 8px;
+}
+
 /* 책등 모양 색 견본 — 방문자 페이지 책장에 꽂힐 색을 미리 보여준다 */
 .admin-swatch {
   flex: none;
