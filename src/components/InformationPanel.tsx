@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import ReactMarkdown from 'react-markdown'
 import type { RoomObjectConfig } from '../data/scene'
 import { useRoomContent } from '../context/ContentContext'
@@ -38,17 +39,62 @@ function EmptyNotice({ what }: { what: string }) {
   )
 }
 
-/* 패널 내 이미지 갤러리 — 대표 우선, 이전/다음 (FR-021) */
+/* 패널 내 이미지 갤러리 — 대표 우선, 이전/다음 (FR-021), 클릭 시 크게 보기 */
 function Gallery({ project }: { project: ProjectRecord }) {
   const [idx, setIdx] = useState(0)
+  const [zoomed, setZoomed] = useState(false)
+
+  useEffect(() => {
+    if (!zoomed) return
+    // 캡처 단계에서 가로채 App의 Escape(패널 닫기)보다 먼저 처리하고 전파를 끊는다
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation()
+        setZoomed(false)
+      }
+    }
+    window.addEventListener('keydown', onKey, true)
+    return () => window.removeEventListener('keydown', onKey, true)
+  }, [zoomed])
+
   const images = project.images
   if (images.length === 0) return null
   const safeIdx = Math.min(idx, images.length - 1)
   const image = images[safeIdx]
+  const alt = `${project.title} 스크린샷 ${safeIdx + 1}`
 
   return (
     <div className="p-gallery">
-      <img src={image.url} alt={`${project.title} 스크린샷 ${safeIdx + 1}`} />
+      <button
+        type="button"
+        className="p-gallery-zoom"
+        aria-label="이미지 크게 보기"
+        onClick={() => setZoomed(true)}
+      >
+        <img src={image.url} alt={alt} />
+      </button>
+      {zoomed &&
+        /* 패널 조상의 transform이 fixed의 기준이 되지 않도록 body 포털로 띄운다 */
+        createPortal(
+          <div
+            className="p-lightbox"
+            role="dialog"
+            aria-modal="true"
+            aria-label="이미지 크게 보기"
+            onClick={() => setZoomed(false)}
+          >
+            <img src={image.url} alt={alt} onClick={(e) => e.stopPropagation()} />
+            <button
+              type="button"
+              className="p-lightbox-close"
+              aria-label="닫기"
+              onClick={() => setZoomed(false)}
+            >
+              ✕
+            </button>
+          </div>,
+          document.body,
+        )}
       {images.length > 1 && (
         <div className="p-gallery-nav">
           <button

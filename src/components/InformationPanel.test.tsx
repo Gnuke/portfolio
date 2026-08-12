@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import InformationPanel from './InformationPanel'
 import { ContentContext } from '../context/ContentContext'
@@ -99,6 +99,49 @@ describe('InformationPanel — 이미지 갤러리 (FR-021)', () => {
     await user.click(screen.getByRole('button', { name: '다음 이미지' }))
 
     expect(screen.getByRole('img')).toHaveAttribute('src', 'https://cdn.test/second.png')
+  })
+
+  test('이미지를 클릭하면 크게 보기 오버레이가 열린다', async () => {
+    const user = userEvent.setup()
+    renderPanel(laptop, withImages)
+
+    await user.click(screen.getByRole('button', { name: '이미지 크게 보기' }))
+
+    const dialog = screen.getByRole('dialog', { name: '이미지 크게 보기' })
+    expect(within(dialog).getByRole('img')).toHaveAttribute(
+      'src',
+      'https://cdn.test/cover.png',
+    )
+  })
+
+  // 패널 자체도 role="dialog"이므로 라이트박스는 접근성 이름으로 구분해 조회한다
+  test('크게 보기는 닫기 버튼으로 닫힌다', async () => {
+    const user = userEvent.setup()
+    renderPanel(laptop, withImages)
+    await user.click(screen.getByRole('button', { name: '이미지 크게 보기' }))
+    const lightbox = screen.getByRole('dialog', { name: '이미지 크게 보기' })
+
+    await user.click(within(lightbox).getByRole('button', { name: '닫기' }))
+
+    expect(
+      screen.queryByRole('dialog', { name: '이미지 크게 보기' }),
+    ).not.toBeInTheDocument()
+  })
+
+  test('Escape는 크게 보기만 닫고 바깥 단축키(패널 닫기)로 전파되지 않는다', async () => {
+    const user = userEvent.setup()
+    const outerEscape = vi.fn()
+    window.addEventListener('keydown', outerEscape)
+    renderPanel(laptop, withImages)
+    await user.click(screen.getByRole('button', { name: '이미지 크게 보기' }))
+
+    await user.keyboard('{Escape}')
+
+    expect(
+      screen.queryByRole('dialog', { name: '이미지 크게 보기' }),
+    ).not.toBeInTheDocument()
+    expect(outerEscape).not.toHaveBeenCalled()
+    window.removeEventListener('keydown', outerEscape)
   })
 })
 
