@@ -72,21 +72,48 @@ export const currentProjects: Project[] = [
   {
     id: 'melolist-v3',
     name: 'Melolist-v3',
-    tagline: '다양한 방식으로 음악을 검색하는 서비스',
-    period: '',
-    status: '마이그레이션 진행 중',
-    description:
-      '음악의 메타데이터가 잘 기억나지 않을 때에도 음성인식을 통해 데이터 없이 곡을 찾을 수 있도록 하고, ' +
-      '이를 기반으로 더 공정한 음원차트 랭킹 시스템을 도입하기 위해 개발 중인 서비스입니다.',
-    highlights: [
-      '음성인식 기반 검색 — 메타데이터 없이도 곡을 탐색',
-      '더 공정한 음원차트 랭킹 시스템 도입',
-      'React Native · Spring Boot 3.5 마이그레이션 진행 중',
-    ],
-    stack: ['React Native', 'JDK 21', 'Spring Boot 3.5', 'Spring AI (예정)'],
+    tagline: '허밍으로 찾는 음악 검색 서비스',
+    period: '2026.07 –',
+    status: '운영 중',
+    // 원격(Supabase projects.description)과 동일한 마크다운 — 렌더러 제약상 표·HTML 금지
+    description: `## 소개
+
+주변에 흐르는 음악을 들려주거나 기억나는 멜로디를 흥얼거리면 곡을 찾아주고,
+찾은 곡을 즐겨찾기·플레이리스트로 관리하는 음악 검색 서비스입니다.
+
+2026.07 – 현재 운영 중 · **1인 개발** (기획 · 디자인 · 개발 · 배포 · 운영)
+
+### 핵심 성과 — 측정으로 검증
+
+- 지문(원음) 인식률 **96.7%** · 허밍 **70%** — 직접 녹음한 클립 50개 전수 실측
+- 검색 응답 p95 **12.4초 → 5.3초** — 운영 이벤트 로그 기반 측정, 목표(6초) 달성
+- AI 폴백 검색 리콜 **80% → 약 96%** — 실쿼리 세트 재현 측정
+- 자동화 테스트 **175건**(백엔드 135 · 프론트 40) · 기능 단위 PR **44건** 병합
+
+### 아키텍처 — 3단 폴백 검색 파이프라인
+
+1차 인식 실패가 곧 "결과 없음"이 되지 않도록 실측 데이터에 근거해 폴백 계층을 설계했습니다.
+
+1. **ACRCloud 지문/허밍 인식** — YouTube 메타 보강 3초 데드라인, DB 저장은 응답 경로 밖 비동기
+2. **AI 자연어 폴백** — 기억나는 가사·분위기로 검색. 2회 병렬 샘플링 + 곡 카탈로그 대조 검증으로 LLM 환각 차단
+3. **웹검색 심층 탐색** — 확인 안 된 후보는 "미확인" 배지로 정직하게 라벨링, 1일 쿼터 관리
+
+### 문제 해결 하이라이트
+
+- **p95 12.4초 → 5.3초**: 구간별 타이밍 계측으로 병목 분해 — 곡 DB 저장 비동기 분리, 메타 보강 데드라인 적용
+- **AI 폴백 품질**: 환각·한/영 표기 혼재·동명이곡을 카탈로그 대조 검증 + 한/영/로마자 3단 교차 대조로 해결
+- **인식률 병목 규명**: 50클립 실측으로 병목이 녹음 품질이 아닌 인식 엔진의 K-곡 허밍 커버리지임을 실증 → 폴백 계층 설계의 근거
+- **UX 디테일**: 테마 전환 깜빡임(FOUC) 차단, 무음(RMS) 사전 가드, 게스트 인라인 로그인 유도
+
+### 운영 방식
+
+- 전 구간 이벤트 로그 계측 → 지표 SQL · 어드민 대시보드로 "측정 → 개선 → 재측정" 루프
+- spec-kit 문서 주도 개발 · GitHub Actions CI · Render/Supabase 무료 티어 제약 대응`,
+    highlights: [],
+    stack: ['React 19', 'TypeScript', 'Spring Boot 3.5', 'Supabase', 'ACRCloud', 'OpenAI'],
     links: [
-      { label: 'GitHub', href: 'https://github.com/Gnuke', disabled: false },
-      { label: 'Live Demo', href: '#', disabled: true },
+      { label: 'GitHub', href: 'https://github.com/Gnuke/Melolist-v3', disabled: false },
+      { label: '서비스', href: 'https://melolist-v3.vercel.app', disabled: false },
     ],
   },
 ]

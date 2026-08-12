@@ -12,9 +12,19 @@ describe('staticContent — FR-018 ②단계 (정적 폴백 어댑터)', () => {
     expect(laptopProjects[0].status).toBe('current')
   })
 
-  test('기존 하이라이트가 설명 마크다운 목록으로 합쳐진다', () => {
+  test('Melolist 항목이 신규 콘텐츠(허밍 검색·핵심 성과)로 매핑된다', () => {
     const project = staticRoomContent().laptopProjects[0]
-    expect(project.description).toContain('- 음성인식 기반 검색')
+    expect(project.tagline).toBe('허밍으로 찾는 음악 검색 서비스')
+    expect(project.description).toContain('### 핵심 성과 — 측정으로 검증')
+    expect(project.description).toContain('- 지문(원음) 인식률')
+    expect(project.stack).toEqual([
+      'React 19',
+      'TypeScript',
+      'Spring Boot 3.5',
+      'Supabase',
+      'ACRCloud',
+      'OpenAI',
+    ])
   })
 
   test('기존 예정 프로젝트가 planned 상태로 매핑된다', () => {
