@@ -1486,6 +1486,36 @@ button {
   transform: rotate(90deg);
 }
 
+.p-lightbox-nav {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  cursor: default;
+}
+
+.p-lightbox-nav button {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.p-lightbox-nav button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
 .p-gallery-nav {
   display: flex;
   align-items: center;

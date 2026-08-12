@@ -128,6 +128,42 @@ describe('InformationPanel — 이미지 갤러리 (FR-021)', () => {
     ).not.toBeInTheDocument()
   })
 
+  test('크게 보기 안에서 다음/이전 버튼으로 이미지를 넘길 수 있다', async () => {
+    const user = userEvent.setup()
+    renderPanel(laptop, withImages)
+    await user.click(screen.getByRole('button', { name: '이미지 크게 보기' }))
+    const lightbox = screen.getByRole('dialog', { name: '이미지 크게 보기' })
+
+    await user.click(within(lightbox).getByRole('button', { name: '다음 이미지' }))
+    expect(within(lightbox).getByRole('img')).toHaveAttribute(
+      'src',
+      'https://cdn.test/second.png',
+    )
+    expect(within(lightbox).getByRole('button', { name: '다음 이미지' })).toBeDisabled()
+
+    await user.click(within(lightbox).getByRole('button', { name: '이전 이미지' }))
+    expect(within(lightbox).getByRole('img')).toHaveAttribute(
+      'src',
+      'https://cdn.test/cover.png',
+    )
+  })
+
+  test('크게 보기 안에서 방향키로 이미지를 넘길 수 있고, 넘긴 위치가 갤러리에 유지된다', async () => {
+    const user = userEvent.setup()
+    renderPanel(laptop, withImages)
+    await user.click(screen.getByRole('button', { name: '이미지 크게 보기' }))
+    const lightbox = screen.getByRole('dialog', { name: '이미지 크게 보기' })
+
+    await user.keyboard('{ArrowRight}')
+    expect(within(lightbox).getByRole('img')).toHaveAttribute(
+      'src',
+      'https://cdn.test/second.png',
+    )
+
+    await user.keyboard('{Escape}')
+    expect(screen.getByRole('img')).toHaveAttribute('src', 'https://cdn.test/second.png')
+  })
+
   test('Escape는 크게 보기만 닫고 바깥 단축키(패널 닫기)로 전파되지 않는다', async () => {
     const user = userEvent.setup()
     const outerEscape = vi.fn()

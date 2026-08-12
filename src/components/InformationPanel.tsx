@@ -44,6 +44,8 @@ function Gallery({ project }: { project: ProjectRecord }) {
   const [idx, setIdx] = useState(0)
   const [zoomed, setZoomed] = useState(false)
 
+  const images = project.images
+
   useEffect(() => {
     if (!zoomed) return
     // 캡처 단계에서 가로채 App의 Escape(패널 닫기)보다 먼저 처리하고 전파를 끊는다
@@ -51,13 +53,15 @@ function Gallery({ project }: { project: ProjectRecord }) {
       if (e.key === 'Escape') {
         e.stopPropagation()
         setZoomed(false)
+      } else if (e.key === 'ArrowRight') {
+        setIdx((i) => Math.min(images.length - 1, i + 1))
+      } else if (e.key === 'ArrowLeft') {
+        setIdx((i) => Math.max(0, i - 1))
       }
     }
     window.addEventListener('keydown', onKey, true)
     return () => window.removeEventListener('keydown', onKey, true)
-  }, [zoomed])
-
-  const images = project.images
+  }, [zoomed, images.length])
   if (images.length === 0) return null
   const safeIdx = Math.min(idx, images.length - 1)
   const image = images[safeIdx]
@@ -92,6 +96,29 @@ function Gallery({ project }: { project: ProjectRecord }) {
             >
               ✕
             </button>
+            {images.length > 1 && (
+              <div className="p-lightbox-nav" onClick={(e) => e.stopPropagation()}>
+                <button
+                  type="button"
+                  aria-label="이전 이미지"
+                  onClick={() => setIdx(Math.max(0, safeIdx - 1))}
+                  disabled={safeIdx === 0}
+                >
+                  ◂
+                </button>
+                <span>
+                  {safeIdx + 1} / {images.length}
+                </span>
+                <button
+                  type="button"
+                  aria-label="다음 이미지"
+                  onClick={() => setIdx(Math.min(images.length - 1, safeIdx + 1))}
+                  disabled={safeIdx === images.length - 1}
+                >
+                  ▸
+                </button>
+              </div>
+            )}
           </div>,
           document.body,
         )}
